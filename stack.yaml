@@ -1,5 +1,7 @@
-flags: {}
+snapshot: lts-21.22
 packages:
 - '.'
-extra-deps: []
-resolver: lts-12.25
+system-ghc: true
+nix:
+  enable: false
+with-hpack: hpack

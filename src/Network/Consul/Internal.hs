@@ -48,6 +48,8 @@ import qualified Data.ByteString as B
 --import qualified Data.ByteString.Base64 as B64
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.HashMap.Strict as H
+import qualified Data.Aeson.Key as K
+import qualified Data.Aeson.KeyMap as KM
 import Data.Maybe
 import qualified Data.Vector as V
 import Data.Text (Text)
@@ -343,8 +345,8 @@ getServices manager hostname portNumber tag dc = do
         bodyParts <- brConsume $ responseBody response
         return $ parseServices tag $ decode $ BL.fromStrict $ B.concat bodyParts
   where
-    parseServices t (Just (Object v)) = filterTags t $ H.toList v
+    parseServices t (Just (Object v)) = filterTags t $ KM.toList v
     parseServices _   _               = []
-    filterTags :: Maybe Text -> [(Text, Value)] -> [Text]
-    filterTags (Just t)               = map fst . filter (\ (_, (Array v)) -> (String t) `V.elem` v)
-    filterTags Nothing                = map fst
+    filterTags :: Maybe Text -> [(K.Key, Value)] -> [Text]
+    filterTags (Just t)               = map (K.toText . fst) . filter (\ (_, (Array v)) -> (String t) `V.elem` v)
+    filterTags Nothing                = map (K.toText . fst)
